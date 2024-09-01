@@ -1,0 +1,36 @@
+{
+  "name": "@fort-major/msq-demo",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "vite build",
+    "dev": "pnpm run propagateEnv && vite --mode dev",
+    "gen": "dfx generate",
+    "dev:deploy": "dfx deploy",
+    "dev:deploy:frontend": "dfx deploy demo_frontend --no-asset-upgrade",
+    "dev:deploy:demo": "pnpm run dev:deploy:frontend",
+    "dev:deploy:backend": "dfx deploy demo_backend",
+    "propagateEnv": "node ../../propagate-env.js",
+    "cargo:repair": "cargo build --target=wasm32-unknown-unknown",
+    "lint": "eslint --fix src --ext .ts --ext .tsx",
+    "format": "pnpm exec prettier src/**/*.{ts,tsx} --write"
+  },
+  "devDependencies": {
+    "dotenv": "16.3.1",
+    "vite": "5.0.5",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-solid": "2.7.2"
+  },
+  "dependencies": {
+    "@dfinity/agent": "^2.0.0",
+    "@dfinity/principal": "^2.0.0",
+    "@fort-major/msq-client": "^0.3.13",
+    "@fort-major/msq-shared": "^0.3",
+    "@solidjs/router": "0.9.1",
+    "solid-js": "1.8.7",
+    "solid-styled-components": "0.28.5"
+  }
+}

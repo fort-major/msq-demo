@@ -1,0 +1,35 @@
+{
+  "canisters": {
+    "demo_backend": {
+      "candid": "backend/src/can_demo_backend/can.did",
+      "package": "demo_backend",
+      "type": "rust"
+    },
+    "demo_frontend": {
+      "build": [""],
+      "dependencies": ["demo_backend"],
+      "frontend": {
+        "entrypoint": "index.html"
+      },
+      "source": ["frontend/assets", "frontend/dist/"],
+      "type": "assets"
+    },
+    "demo_frontend_new": {
+        "build": [""],
+        "dependencies": ["demo_backend"],
+        "frontend": {
+          "entrypoint": "index.html"
+        },
+        "source": ["frontend/assets", "frontend/dist/"],
+        "type": "assets"
+      }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

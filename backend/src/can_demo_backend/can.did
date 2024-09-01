@@ -1,0 +1,17 @@
+type Order = record {
+  id : nat;
+  qty : nat32;
+  status : OrderStatus;
+  total : nat;
+  memo : blob;
+  buyer : principal;
+  price : nat64;
+};
+type OrderStatus = variant { PendingPayment; Paid; Created; Canceled };
+service : () -> {
+  cancel_order : (nat) -> ();
+  complete_order : (nat, nat64) -> ();
+  create_order : (nat32) -> (nat);
+  get_my_order_ids : () -> (vec nat) query;
+  get_order : (nat) -> (Order) query;
+}
