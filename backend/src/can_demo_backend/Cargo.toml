@@ -16,10 +16,10 @@ panic = 'abort'
 crate-type = ["cdylib"]
 
 [dependencies]
-ic-ledger-types = "0.13"
 candid = "0.10.8"
 serde = "1.0"
 ic-cdk = "0.13"
+msq_pay_types = "0.1"
 
 [build-dependencies]
 dotenv = "0.15"

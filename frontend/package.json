@@ -7,13 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "vite build",
-    "dev": "pnpm run propagateEnv && vite --mode dev",
-    "gen": "dfx generate",
-    "dev:deploy": "dfx deploy",
-    "dev:deploy:frontend": "dfx deploy demo_frontend --no-asset-upgrade",
-    "dev:deploy:demo": "pnpm run dev:deploy:frontend",
-    "dev:deploy:backend": "dfx deploy demo_backend",
-    "propagateEnv": "node ../../propagate-env.js",
+    "dev": "vite --mode dev",
     "cargo:repair": "cargo build --target=wasm32-unknown-unknown",
     "lint": "eslint --fix src --ext .ts --ext .tsx",
     "format": "pnpm exec prettier src/**/*.{ts,tsx} --write"
@@ -27,7 +21,7 @@
   "dependencies": {
     "@dfinity/agent": "^2.0.0",
     "@dfinity/principal": "^2.0.0",
-    "@fort-major/msq-client": "^0.3.13",
+    "@fort-major/msq-client": "^0.3.22",
     "@fort-major/msq-shared": "^0.3",
     "@solidjs/router": "0.9.1",
     "solid-js": "1.8.7",

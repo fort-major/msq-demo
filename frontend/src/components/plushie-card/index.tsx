@@ -14,10 +14,10 @@ import {
   PlushieCardWrapper,
   QtySelector,
 } from "./style";
+import { tokensToStr } from "@fort-major/msq-shared";
 
 export interface IPlushieCardProps {
-  inStock: number;
-  price: number;
+  priceUsdE8s: bigint;
   qty: number;
   onAdd(): void;
   onRemove(): void;
@@ -37,14 +37,11 @@ export function PlushieCard(props: IPlushieCardProps) {
       <CardControls>
         <CardControlsLeft>
           <CardControlsPrice>
-            <Show when={props.qty > 0} fallback={props.price.toPrecision(1)}>
-              {(props.price * props.qty).toPrecision(1)}
+            <span>$</span>
+            <Show when={props.qty > 0} fallback={tokensToStr(props.priceUsdE8s, 8)}>
+              {tokensToStr(props.priceUsdE8s * BigInt(props.qty), 8)}
             </Show>{" "}
-            <span>ICP</span>
           </CardControlsPrice>
-          <CardControlsInStock>
-            {props.inStock} <span>left in stock</span>
-          </CardControlsInStock>
         </CardControlsLeft>
         <CardControlsRight>
           <Switch>

@@ -1,17 +1,39 @@
+type EDs = record { val : nat; decimals : nat8 };
+type InitArgs = record { price_usd_e8s : nat; msq_pay_shop_id : nat64 };
+type Invoice = record {
+  id : blob;
+  status : InvoiceStatus;
+  creator : principal;
+  exchange_rates_timestamp : nat64;
+  created_at : nat64;
+  shop_id : nat64;
+  qty_usd : nat;
+};
+type InvoiceStatus = variant {
+  Paid : record {
+    qty : EDs;
+    token_id : principal;
+    timestamp : nat64;
+    exchange_rate : EDs;
+  };
+  VerifyPayment;
+  Created : record { ttl : nat8 };
+};
 type Order = record {
   id : nat;
-  qty : nat32;
   status : OrderStatus;
-  total : nat;
-  memo : blob;
+  number_of_plushies : nat32;
   buyer : principal;
-  price : nat64;
 };
-type OrderStatus = variant { PendingPayment; Paid; Created; Canceled };
-service : () -> {
-  cancel_order : (nat) -> ();
-  complete_order : (nat, nat64) -> ();
+type OrderStatus = variant {
+  Failed : text;
+  PendingPayment : blob;
+  Paid : Invoice;
+};
+service : (InitArgs) -> {
+  complete_order : (nat, principal, nat) -> ();
   create_order : (nat32) -> (nat);
   get_my_order_ids : () -> (vec nat) query;
   get_order : (nat) -> (Order) query;
+  get_plushie_price_usd : () -> (nat) query;
 }

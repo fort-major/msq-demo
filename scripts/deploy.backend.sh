@@ -15,4 +15,9 @@ file_name="./backend/.env.$mode"
 
 source $file_name
 
-dfx deploy --network=$network demo_backend --argument "()"
+dfx deploy --network=$network demo_backend --argument "( \
+    record { \
+        msq_pay_shop_id = 0 : nat64; \
+        price_usd_e8s = 3000_0000 : nat; \
+    } \
+)"

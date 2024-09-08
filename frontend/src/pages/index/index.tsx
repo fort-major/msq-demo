@@ -1,6 +1,6 @@
 import { HttpAgent, Identity } from "@dfinity/agent";
-import { MsqClient, TMsqCreateOk } from "@fort-major/msq-client";
-import { Match, Switch, batch, createEffect, createResource, createSignal } from "solid-js";
+import { MsqClient } from "@fort-major/msq-client";
+import { Match, Show, Switch, batch, createEffect, createResource, createSignal } from "solid-js";
 import { Body, BodyHeading, Header, LoginButton, Logo, ProfileWrapper } from "./style";
 import MetaMaskLogoSvg from "#assets/metamask.svg";
 import { PlushieCard } from "../../components/plushie-card";
@@ -9,18 +9,16 @@ import { Order } from "../../declarations/demo_backend/demo_backend.did";
 import { OrderComp } from "../../components/order";
 import { Principal } from "@dfinity/principal";
 
+export const MSQ_ORIGIN = import.meta.env.MODE === "ic" ? "https://msq.tech" : "http://localhost:8000";
+export const MSQ_SNAP_ID = import.meta.env.MODE === "ic" ? "npm:@fort-major/msq" : "local:http://localhost:8081";
+
 interface IProfile {
   pseudonym: string;
   avatarSrc: string;
 }
 
-const ICP_TOKEN_ID = "ryjl3-tyaaa-aaaaa-aaaba-cai";
-const RECIPIENT_PRINCIPAL = "rmapb-pzxbf-4fimd-h33qy-aydfx-wxne6-64kqi-f6nwz-cfzyq-wf7tb-bqe";
-
 export const IndexPage = () => {
   const [qty, setQty] = createSignal(0);
-  const [defaultInStock] = createSignal(1000);
-  const [inStock, setInStock] = createSignal(1000);
   const [identity, setIdentity] = createSignal<Identity | null>(null);
   const [profile, setProfile] = createSignal<IProfile | null>(null);
   const [loading, setLoading] = createSignal<boolean>(false);
@@ -30,11 +28,10 @@ export const IndexPage = () => {
   const [backend] = createResource(identity, async (identity) => {
     const agent = new HttpAgent({
       identity,
-      verifyQuerySignatures: false,
-      host: import.meta.env.VITE_MSQ_DFX_NETWORK_HOST,
+      host: import.meta.env.VITE_IC_HOST,
     });
 
-    if (import.meta.env.VITE_MSQ_MODE === "DEV") {
+    if (import.meta.env.MODE === "dev") {
       await agent.fetchRootKey();
     }
 
@@ -47,6 +44,8 @@ export const IndexPage = () => {
     return Promise.all(ids.map(backend.get_order));
   });
 
+  const [plushiePriceUsd] = createResource(backend, async (backend) => backend.get_plushie_price_usd());
+
   createEffect(async () => {
     if (MsqClient.isSafeToResume()) {
       handleLogin();
@@ -54,7 +53,7 @@ export const IndexPage = () => {
   });
 
   const handleLogin = async () => {
-    const result = await MsqClient.createAndLogin();
+    const result = await MsqClient.createAndLogin({ msqOrigin: MSQ_ORIGIN, snapId: MSQ_SNAP_ID });
 
     if ("Err" in result) {
       throw new Error(result.Err);
@@ -75,13 +74,11 @@ export const IndexPage = () => {
   };
 
   const handleAdd = () => {
-    setQty((qty) => (qty < inStock() ? qty + 1 : qty));
-    setInStock((inStock) => (inStock > 0 ? inStock - 1 : inStock));
+    setQty((qty) => qty + 1);
   };
 
   const handleRemove = () => {
-    setQty((qty) => (qty > 0 ? qty - 1 : qty));
-    setInStock((inStock) => (inStock < defaultInStock() ? inStock + 1 : inStock));
+    setQty((qty) => qty - 1);
   };
 
   const handleContinue = async () => {
@@ -90,25 +87,25 @@ export const IndexPage = () => {
     const orderId = await backend()!.create_order(qty());
     const order = await backend()!.get_order(orderId);
 
-    console.log(order);
-
     setOrder(order);
 
     setLoading(false);
   };
 
   const handlePay = async () => {
+    const o = order();
+    if (!o) return;
+
+    if (!("PendingPayment" in o.status)) return;
+
     setLoading(true);
 
     try {
-      const blockIndex = await msq()!.requestICRC1Transfer(
-        Principal.fromText(ICP_TOKEN_ID),
-        { owner: Principal.fromText(RECIPIENT_PRINCIPAL) },
-        order()!.total,
-        new Uint8Array(order()!.memo)
-      );
+      const resp = await msq()!.requestMSQPay(o.status.PendingPayment as Uint8Array);
 
-      if (blockIndex === null) {
+      console.log(resp);
+
+      if (resp === null) {
         setTimeout(() => {
           alert("The payment was rejected!");
 
@@ -117,8 +114,13 @@ export const IndexPage = () => {
         return;
       }
 
-      await backend()!.complete_order(order()!.id, blockIndex);
-      setOrder({ ...order()!, status: { Paid: null } });
+      await backend()!.complete_order(o.id, Principal.fromText(resp.tokenId), resp.blockIdx);
+
+      const or = await backend()!.get_order(o.id);
+
+      console.log(or);
+
+      setOrder(or);
 
       setLoading(false);
     } catch (e) {
@@ -163,9 +165,8 @@ export const IndexPage = () => {
             <PlushieCard
               loggedIn={identity() !== null}
               loading={backend() === undefined || loading()}
-              inStock={inStock()}
               qty={qty()}
-              price={0.1}
+              priceUsdE8s={plushiePriceUsd() ?? 0n}
               onAdd={handleAdd}
               onRemove={handleRemove}
               onContinue={handleContinue}
@@ -173,7 +174,9 @@ export const IndexPage = () => {
           </Match>
           <Match when={order() !== null}>
             <BodyHeading>Here is your order</BodyHeading>
-            <OrderComp loading={loading()} {...order()!} onPay={handlePay} />
+            <Show when={plushiePriceUsd()}>
+              <OrderComp loading={loading()} {...order()!} onPay={handlePay} plushiePriceUsd={plushiePriceUsd()!} />
+            </Show>
           </Match>
         </Switch>
       </Body>

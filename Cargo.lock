@@ -148,8 +148,8 @@ version = "0.1.0"
 dependencies = [
  "candid",
  "dotenv",
- "ic-cdk 0.13.5",
- "ic-ledger-types",
+ "ic-cdk",
+ "msq_pay_types",
  "serde",
 ]
 
@@ -198,21 +198,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b1da6a25b045f9da3c9459c0cb2b0700ac368ee16382975a17185a23b9c18ab"
 dependencies = [
  "candid",
- "ic-cdk-macros 0.13.2",
- "ic0 0.21.1",
- "serde",
- "serde_bytes",
-]
-
-[[package]]
-name = "ic-cdk"
-version = "0.16.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd8ecacd682fa05a985253592963306cb9799622d7b1cce4b1edb89c6ec85be1"
-dependencies = [
- "candid",
- "ic-cdk-macros 0.16.0",
- "ic0 0.23.0",
+ "ic-cdk-macros",
+ "ic0",
  "serde",
  "serde_bytes",
 ]
@@ -227,37 +214,20 @@ dependencies = [
  "proc-macro2",
  "quote",
  "serde",
- "serde_tokenstream 0.1.7",
+ "serde_tokenstream",
  "syn 1.0.109",
 ]
 
 [[package]]
-name = "ic-cdk-macros"
-version = "0.16.0"
+name = "ic-e8s"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d4d857135deef20cc7ea8f3869a30cd9cfeb1392b3a81043790b2cd82adc3e0"
+checksum = "5c16596da75906e87043f2d5027f3ca1ef700d0718e1ecd6d00eee2b5c85c7d2"
 dependencies = [
  "candid",
- "proc-macro2",
- "quote",
+ "lazy_static",
+ "num-bigint",
  "serde",
- "serde_tokenstream 0.2.2",
- "syn 2.0.77",
-]
-
-[[package]]
-name = "ic-ledger-types"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a144b5b4c9e4b164b338440cfbdcf9f30ff45e3d48a3be62d2424996dc93d6f"
-dependencies = [
- "candid",
- "crc32fast",
- "hex",
- "ic-cdk 0.16.0",
- "serde",
- "serde_bytes",
- "sha2",
 ]
 
 [[package]]
@@ -265,12 +235,6 @@ name = "ic0"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a54b5297861c651551676e8c43df805dad175cc33bc97dbd992edbbb85dcbcdf"
-
-[[package]]
-name = "ic0"
-version = "0.23.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8de254dd67bbd58073e23dc1c8553ba12fa1dc610a19de94ad2bbcd0460c067f"
 
 [[package]]
 name = "ic_principal"
@@ -302,6 +266,18 @@ name = "libc"
 version = "0.2.158"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8adc4bb1803a324070e64a98ae98f38934d91957a99cfb3a43dcbc01bc56439"
+
+[[package]]
+name = "msq_pay_types"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87abe0d54a4aef0b355ca60369d487721f0a07ba12643356d9cd685bb74f9c4d"
+dependencies = [
+ "candid",
+ "ic-cdk",
+ "ic-e8s",
+ "serde",
+]
 
 [[package]]
 name = "num-bigint"
@@ -420,18 +396,6 @@ dependencies = [
  "proc-macro2",
  "serde",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "serde_tokenstream"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64060d864397305347a78851c51588fd283767e7e7589829e8121d65512340f1"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde",
- "syn 2.0.77",
 ]
 
 [[package]]

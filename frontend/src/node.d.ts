@@ -1,12 +1,10 @@
 interface ImportMeta {
   env: {
     DEV: boolean;
-    VITE_MSQ_MODE: "DEV" | "PROD";
-    VITE_CANISTER_ID_DEMO_BACKEND: string;
-    VITE_MSQ_SNAP_VERSION: string;
-    VITE_MSQ_SNAP_ID: string;
-    VITE_MSQ_SNAP_SITE_ORIGIN: string;
-    VITE_MSQ_DFX_NETWORK_HOST: string;
+    MODE: "dev" | "ic";
+    VITE_DEMO_BACKEND_CANISTER_ID: string;
+    VITE_ROOT_KEY: string;
+    VITE_IC_HOST: string;
   };
 }
 
